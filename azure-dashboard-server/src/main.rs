@@ -11,6 +11,7 @@ use std::sync::Mutex;
 
 mod azure_token_cache;
 mod errors;
+mod routes;
 mod settings;
 mod static_file_handlers;
 

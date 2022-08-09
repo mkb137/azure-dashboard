@@ -1,0 +1,8 @@
+
+// Bootstrap's variables (which will use ours where set)
+@import "../../node_modules/bootstrap/scss/variables";
+
+:root, body {
+    background-color: $dark;
+    color: $light;
+}

@@ -1,10 +1,9 @@
 <script lang="ts">
-    import svelteLogo from './assets/svelte.svg'
-    import Counter from './lib/Counter.svelte'
     import {ToastContainer} from "./components/index.js";
     import SubPage from "./components/SubPage.svelte";
-    import {Router, Route, Link} from 'svelte-routing'
+    import {Route, Router} from 'svelte-routing'
     import Home from "./components/Home.svelte";
+    import 'bootstrap'
 </script>
 
 <main>
