@@ -66,13 +66,20 @@ impl TryFrom<TokenResponse> for AccessToken {
 
     // Tries to create an access token from a token response.
     fn try_from(value: TokenResponse) -> Result<Self, Self::Error> {
-        // Try to convert the expiry date string to seconds
-        let unix_expiry_date = value
-            .expires_on
+        // Get the "expires_in" in seconds (which can be better than "expires_on" if the clocks are different
+        let expires_in = value
+            .expires_in
             .parse::<i64>()
             .map_err(anyhow::Error::from)?;
-        // Create a UTC date
-        let expiry_date = chrono::Utc.timestamp(unix_expiry_date, 0);
+        // Add it to "now" to get the expiry date
+        let expiry_date = chrono::Utc::now() + chrono::Duration::seconds(expires_in);
+        // // Try to convert the expiry date string to seconds
+        // let unix_expiry_date = value
+        //     .expires_on
+        //     .parse::<i64>()
+        //     .map_err(anyhow::Error::from)?;
+        // // Create a UTC date
+        // let expiry_date = chrono::Utc.timestamp(unix_expiry_date, 0);
         // Create the access token
         let access_token = AccessToken::new(value.access_token(), expiry_date);
         // Return it
@@ -194,7 +201,6 @@ impl AccessTokenCache {
 }
 
 // A map of access token caches by subscription ID
-#[derive(Clone)]
 pub struct AccessTokenCacheMap {
     // The access token caches by subscription ID.
     access_token_caches: Arc<Mutex<HashMap<String, AccessTokenCache>>>,
