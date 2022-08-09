@@ -194,9 +194,10 @@ impl AccessTokenCache {
 }
 
 // A map of access token caches by subscription ID
+#[derive(Clone)]
 pub struct AccessTokenCacheMap {
     // The access token caches by subscription ID.
-    access_token_caches: Mutex<HashMap<String, AccessTokenCache>>,
+    access_token_caches: Arc<Mutex<HashMap<String, AccessTokenCache>>>,
 }
 impl AccessTokenCacheMap {
     // Create a new cache map from the list of subscriptions.
@@ -213,15 +214,16 @@ impl AccessTokenCacheMap {
         }
         // Return the map
         AccessTokenCacheMap {
-            access_token_caches: Mutex::new(caches),
+            access_token_caches: Arc::new(Mutex::new(caches)),
         }
     }
     // Gets an access token for the given subscription.
     pub async fn access_token(&self, subscription_id: String) -> anyhow::Result<String> {
         // Get the token caches
-        let mut access_token_caches = self.access_token_caches.lock().unwrap();
+        let arc = self.access_token_caches.clone();
+        let mut guard = arc.lock().unwrap();
         // If we have an access token cache for this subscription...
-        if let Some(access_token_cache) = access_token_caches.get_mut(&subscription_id) {
+        if let Some(access_token_cache) = guard.get_mut(&subscription_id) {
             // Try to get an access token
             let access_token = access_token_cache.access_token().await?;
             // Return the token
