@@ -14,3 +14,6 @@ Cargo.lock
 
 # Omit the local settings - they have secret values
 config.local.json
+
+# Omit generated web files
+wwwroot

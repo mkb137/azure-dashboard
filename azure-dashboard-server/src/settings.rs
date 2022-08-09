@@ -43,6 +43,8 @@ impl SubscriptionSettings {
 #[derive(Debug, serde::Deserialize)]
 #[allow(unused)]
 pub struct Settings {
+    // The host we'll run on (e.g. "localhost")
+    host: String,
     // The port we'll run on
     port: u16,
     // The subscriptions.
@@ -69,6 +71,10 @@ impl Settings {
             .build()?;
         // Try to deserialize the file
         settings.try_deserialize()
+    }
+    // The configured host.
+    pub fn host(&self) -> String {
+        self.host.clone()
     }
     // The configured port.
     pub fn port(&self) -> u16 {

@@ -7,16 +7,34 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "check": "svelte-check --tsconfig ./tsconfig.json"
+    "check": "svelte-check --tsconfig ./tsconfig.json",
+    "format": "prettier --write ./src/**/*.{js,svelte,html,ts}",
+    "lint": "eslint --ext ts,svelte --fix src",
+    "prelint": "npm run format"
   },
   "devDependencies": {
-    "@sveltejs/vite-plugin-svelte": "^1.0.1",
+    "@sveltejs/vite-plugin-svelte": "^1.0.0",
     "@tsconfig/svelte": "^3.0.0",
-    "svelte": "^3.49.0",
-    "svelte-check": "^2.8.0",
-    "svelte-preprocess": "^4.10.7",
+    "@typescript-eslint/eslint-plugin": "^5.0.0",
+    "@typescript-eslint/parser": "^5.0.0",
+    "@types/bootstrap": "^5.0.0",
+    "eslint": "^8.0.0",
+    "eslint-plugin-simple-import-sort": "^7.0.0",
+    "eslint-plugin-svelte3": "^3.0.0",
+    "prettier": "^2.3.2",
+    "prettier-plugin-svelte": "^2.0.0",
+    "svelte": "^3.0.0",
+    "svelte-check": "^2.0.0",
+    "svelte-preprocess": "^4.0.0",
     "tslib": "^2.4.0",
-    "typescript": "^4.6.4",
+    "typescript": "^4.0.0",
     "vite": "^3.0.0"
+  },
+  "dependencies": {
+    "@popperjs/core": "^2.0.0",
+    "bootstrap": "^5.0.0",
+    "highcharts": "^9.3.0",
+    "lodash": "^4.0.0",
+    "svelte-routing": "^1.6.0"
   }
 }
