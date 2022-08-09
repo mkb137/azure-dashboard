@@ -192,3 +192,48 @@ impl AccessTokenCache {
         }
     }
 }
+
+// A map of access token caches by subscription ID
+pub struct AccessTokenCacheMap {
+    // The access token caches by subscription ID.
+    access_token_caches: Mutex<HashMap<String, AccessTokenCache>>,
+}
+impl AccessTokenCacheMap {
+    // Create a new cache map from the list of subscriptions.
+    pub fn new(subscriptions: &Vec<SubscriptionSettings>) -> Self {
+        // Create the map of caches
+        let mut caches = HashMap::new();
+        // For each subscription...
+        for subscription in subscriptions {
+            // Add a new cache
+            caches.insert(
+                subscription.subscription_id(),
+                AccessTokenCache::new(subscription.clone()),
+            );
+        }
+        // Return the map
+        AccessTokenCacheMap {
+            access_token_caches: Mutex::new(caches),
+        }
+    }
+    // Gets an access token for the given subscription.
+    pub async fn access_token(&self, subscription_id: String) -> anyhow::Result<String> {
+        // Get the token caches
+        let mut access_token_caches = self.access_token_caches.lock().unwrap();
+        // If we have an access token cache for this subscription...
+        if let Some(access_token_cache) = access_token_caches.get_mut(&subscription_id) {
+            // Try to get an access token
+            let access_token = access_token_cache.access_token().await?;
+            // Return the token
+            Ok(access_token)
+        }
+        // If we don't have an access token cache for this subscription...
+        else {
+            // Return an error.  The token caches should have been initialized on startup.
+            Err(anyhow::anyhow!(
+                "There is no token cache for subscription ID {:?}",
+                subscription_id
+            ))
+        }
+    }
+}

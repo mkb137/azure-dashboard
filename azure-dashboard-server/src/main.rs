@@ -2,7 +2,7 @@
 #![allow(unused_imports)]
 #![allow(unused_variables)]
 
-use crate::azure_token_cache::AccessTokenCache;
+use crate::azure_token_cache::{AccessTokenCache, AccessTokenCacheMap};
 use crate::settings::Settings;
 use actix_web::{get, web, App, HttpServer, Responder};
 use std::sync::Mutex;
@@ -25,6 +25,7 @@ async fn main() -> anyhow::Result<()> {
     log::debug!(" - loading the configuration file");
     let settings = Settings::new().unwrap();
     log::debug!(" - loading settings = {:?}", settings);
+    /*
     // For each subscription...
     for subscription in settings.subscriptions() {
         // Create an access token cache
@@ -37,7 +38,26 @@ async fn main() -> anyhow::Result<()> {
         let access_token = token_cache.access_token().await?;
         log::debug!(" - got access token {:?}", access_token);
     }
-
+    */
+    // Create a token cache map
+    let token_caches = AccessTokenCacheMap::new(settings.subscriptions());
+    // For each subscription...
+    for subscription in settings.subscriptions() {
+        // Get an access token
+        log::debug!(
+            " - getting access token for subscription {:?}",
+            subscription.subscription_id()
+        );
+        let access_token = token_caches
+            .access_token(subscription.subscription_id())
+            .await?;
+        log::debug!(" - got access token {:?}", access_token);
+        log::debug!(" - getting another access token");
+        let access_token = token_caches
+            .access_token(subscription.subscription_id())
+            .await?;
+        log::debug!(" - got access token {:?}", access_token);
+    }
     /*
     // Initialize the token cache
     let token_cache = web::Data::new(AccessTokenCache {
