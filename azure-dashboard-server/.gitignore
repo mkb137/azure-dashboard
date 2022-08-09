@@ -12,5 +12,5 @@ Cargo.lock
 # IntelliJ files
 .idea/**
 
-# Log files generated during testing.
-log
+# Omit the local settings - they have secret values
+config.local.json
