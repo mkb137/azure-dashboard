@@ -16,7 +16,11 @@ root:
     - stdout
     - file
 loggers:
-  rstest:
+  hyper:
     level: warn
-  rust-mssql:
-    level: trace
+  reqwest:
+    level: warn
+  azure_dashboard_server::settings:
+    level: warn
+  azure_dashboard_server:
+    level: debug
