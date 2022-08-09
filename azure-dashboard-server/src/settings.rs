@@ -1,4 +1,3 @@
-
 // The settings relating to a single subscription.
 #[derive(Debug, serde::Deserialize)]
 #[allow(unused)]
@@ -29,9 +28,8 @@ pub struct Settings {
 }
 
 impl Settings {
-
     // Loads the settings from file.
-    pub fn new() -> Result<Self,config::ConfigError> {
+    pub fn new() -> Result<Self, config::ConfigError> {
         log::debug!("Settings.new");
         // Get the run mode from the environment variables.
         // Default to "local" if not specified.
@@ -41,6 +39,10 @@ impl Settings {
         let settings = config::Config::builder()
             // Add the default configuration file
             .add_source(config::File::with_name("config.json"))
+            // Add the file for the selected run mode, if present
+            .add_source(
+                config::File::with_name(&format!("config.{}.json", run_mode)).required(false),
+            )
             // Build the file
             .build()?;
         // Try to deserialize the file
