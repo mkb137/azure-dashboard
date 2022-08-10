@@ -2,117 +2,64 @@
 #[derive(Clone, Debug, serde::Deserialize)]
 pub struct DatabaseSettings {
     // The server name
-    server_name: String,
+    pub server_name: String,
     // The database name
-    database_name: String,
-}
-impl DatabaseSettings {
-    pub fn database_name(&self) -> String {
-        self.database_name.clone()
-    }
-    pub fn server_name(&self) -> String {
-        self.server_name.clone()
-    }
+    pub database_name: String,
 }
 
 // Settings for a database to be displayed in the dashboard.
 #[derive(Clone, Debug, serde::Deserialize)]
 pub struct ElasticPoolSettings {
     // The server name
-    server_name: String,
+    pub server_name: String,
     // The elastic pool name
-    elastic_pool_name: String,
-}
-impl ElasticPoolSettings {
-    pub fn elastic_pool_name(&self) -> String {
-        self.elastic_pool_name.clone()
-    }
-    pub fn server_name(&self) -> String {
-        self.server_name.clone()
-    }
+    pub elastic_pool_name: String,
 }
 
 // Settings for a resource group.
 #[derive(Clone, Debug, serde::Deserialize)]
 pub struct ResourceGroupSettings {
     // The resource group name
-    resource_group_name: String,
+    pub resource_group_name: String,
     // The databases to be displayed in the dashboard
-    databases: Vec<DatabaseSettings>,
+    pub databases: Vec<DatabaseSettings>,
     // The elastic pools to be displayed in the dashboard
-    elastic_pools: Vec<ElasticPoolSettings>,
-}
-impl ResourceGroupSettings {
-    pub fn resource_group_name(&self) -> String {
-        self.resource_group_name.clone()
-    }
-    pub fn databases(&self) -> &Vec<DatabaseSettings> {
-        &self.databases
-    }
-    pub fn elastic_pools(&self) -> &Vec<ElasticPoolSettings> {
-        &self.elastic_pools
-    }
+    pub elastic_pools: Vec<ElasticPoolSettings>,
 }
 
 // The settings relating to a single subscription.
 #[derive(Clone, Debug, serde::Deserialize)]
 pub struct SubscriptionSettings {
     // The Azure AD App Registration client ID (a GUID)
-    client_id: String,
+    pub client_id: String,
     // The Azure AD App Registration secret value (a long string of random chars)
     // Note: Not the secret ID (a GUID)
     // Note2: This secret expires 6, 12, or however many months were specified at time of
     // creation and will have to be updated.
-    client_secret: String,
+    pub client_secret: String,
     // The display name for this subscription
-    display_name: String,
+    pub display_name: String,
     // The OAuth2 resource name, e.g. "https://management.azure.com"
-    resource: String,
+    pub resource: String,
     // The subscription ID (a GUID)
-    subscription_id: String,
+    pub subscription_id: String,
     // The tenant ID (a GUID)
-    tenant_id: String,
+    pub tenant_id: String,
     // The Azure OAuth2 base auth URL, e.g. https://login.microsoftonline.com/TENANT_ID/oauth2/token
-    token_url: String,
+    pub token_url: String,
     // The resource groups
-    resource_groups: Vec<ResourceGroupSettings>,
-}
-impl SubscriptionSettings {
-    pub fn client_id(&self) -> String {
-        self.client_id.clone()
-    }
-    pub fn client_secret(&self) -> String {
-        self.client_secret.clone()
-    }
-    pub fn display_name(&self) -> String {
-        self.display_name.clone()
-    }
-    pub fn subscription_id(&self) -> String {
-        self.subscription_id.clone()
-    }
-    pub fn resource(&self) -> String {
-        self.resource.clone()
-    }
-    pub fn tenant_id(&self) -> String {
-        self.tenant_id.clone()
-    }
-    pub fn token_url(&self) -> String {
-        self.token_url.clone()
-    }
-    pub fn resource_groups(&self) -> &Vec<ResourceGroupSettings> {
-        &self.resource_groups
-    }
+    pub resource_groups: Vec<ResourceGroupSettings>,
 }
 
 // The application configuration settings.
 #[derive(Debug, serde::Deserialize)]
 pub struct DashboardSettings {
     // The host we'll run on (e.g. "localhost")
-    host: String,
+    pub host: String,
     // The port we'll run on
-    port: u16,
+    pub port: u16,
     // The subscriptions.
-    subscriptions: Vec<SubscriptionSettings>,
+    pub subscriptions: Vec<SubscriptionSettings>,
 }
 
 impl DashboardSettings {
@@ -135,17 +82,5 @@ impl DashboardSettings {
             .build()?;
         // Try to deserialize the file
         settings.try_deserialize()
-    }
-    // The configured host.
-    pub fn host(&self) -> String {
-        self.host.clone()
-    }
-    // The configured port.
-    pub fn port(&self) -> u16 {
-        self.port
-    }
-    // The subscriptions
-    pub fn subscriptions(&self) -> &Vec<SubscriptionSettings> {
-        &self.subscriptions
     }
 }

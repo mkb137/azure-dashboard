@@ -10,11 +10,11 @@ use actix_web::{get, web};
 #[serde(rename_all = "camelCase")]
 pub struct DatabaseViewModel {
     // The amount of data used
-    database_size_used: f64,
+    database_size_used: u64,
     // The amount of data allocated
-    database_size_allocated: f64,
+    database_size_allocated: u64,
     // The maximum size of the database
-    database_size_max: f64,
+    database_size_max: u64,
 }
 
 // Returns info related to a database as JSON
@@ -45,28 +45,12 @@ pub async fn database(
     // If we got an error, convert it to an Azure API error
     .map_err(|e| AzureApiError(e.to_string()))?;
     log::debug!(" - got response\r\n{:?}", database_usage_response);
-    // We want database properties
-    let mut database_size: f64 = 0.0;
-    let mut database_size_max: f64 = 0.0;
-    let mut database_size_allocated: f64 = 0.0;
-    // Look for a "database_size" value
-    if let Some(value) = database_usage_response.find_value_by_name("database_size") {
-        // If found, use the current value as the size and the limit as the max size.
-        database_size = value.properties().current_value();
-        database_size_max = value.properties().limit();
-    } else {
-        log::debug!(" - failed to find 'database_size' value.")
-    }
-    // Look for a "database_allocated_size" value
-    if let Some(value) = database_usage_response.find_value_by_name("database_allocated_size") {
-        // If found, use the current value as the allocated size.  The limit should be the same as above.
-        database_size_allocated = value.properties().current_value();
-    } else {
-        log::debug!(" - failed to find 'database_allocated_size' value.")
-    }
+    // Get the databases sizes
+    let (database_size_used, database_size_allocated, database_size_max) =
+        database_usage_response.get_sizes();
     // Create the view model
     let view_model = DatabaseViewModel {
-        database_size_used: database_size,
+        database_size_used,
         database_size_allocated,
         database_size_max,
     };

@@ -19,8 +19,8 @@ struct DatabaseViewModel {
 impl From<&DatabaseSettings> for DatabaseViewModel {
     fn from(value: &DatabaseSettings) -> Self {
         Self {
-            server_name: value.server_name(),
-            database_name: value.database_name(),
+            server_name: value.server_name.clone(),
+            database_name: value.database_name.clone(),
         }
     }
 }
@@ -39,8 +39,8 @@ struct ElasticPoolViewModel {
 impl From<&ElasticPoolSettings> for ElasticPoolViewModel {
     fn from(value: &ElasticPoolSettings) -> Self {
         Self {
-            server_name: value.server_name(),
-            elastic_pool_name: value.elastic_pool_name(),
+            server_name: value.server_name.clone(),
+            elastic_pool_name: value.elastic_pool_name.clone(),
         }
     }
 }
@@ -61,14 +61,10 @@ struct ResourceGroupViewModel {
 impl From<&ResourceGroupSettings> for ResourceGroupViewModel {
     fn from(value: &ResourceGroupSettings) -> Self {
         Self {
-            resource_group_name: value.resource_group_name(),
-            databases: value
-                .databases()
-                .iter()
-                .map(|d| d.into())
-                .collect::<Vec<_>>(),
+            resource_group_name: value.resource_group_name.clone(),
+            databases: value.databases.iter().map(|d| d.into()).collect::<Vec<_>>(),
             elastic_pools: value
-                .elastic_pools()
+                .elastic_pools
                 .iter()
                 .map(|d| d.into())
                 .collect::<Vec<_>>(),
@@ -92,10 +88,10 @@ struct SubscriptionViewModel {
 impl From<&SubscriptionSettings> for SubscriptionViewModel {
     fn from(value: &SubscriptionSettings) -> Self {
         Self {
-            display_name: value.display_name(),
-            subscription_id: value.subscription_id(),
+            display_name: value.display_name.clone(),
+            subscription_id: value.subscription_id.clone(),
             resource_groups: value
-                .resource_groups()
+                .resource_groups
                 .iter()
                 .map(|d| d.into())
                 .collect::<Vec<_>>(),
@@ -116,7 +112,7 @@ impl From<&DashboardSettings> for DashboardViewModel {
     fn from(value: &DashboardSettings) -> Self {
         Self {
             subscriptions: value
-                .subscriptions()
+                .subscriptions
                 .iter()
                 .map(|s| s.into())
                 .collect::<Vec<_>>(),

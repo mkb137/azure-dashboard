@@ -38,10 +38,10 @@ async fn main() -> anyhow::Result<()> {
     let settings = DashboardSettings::new().unwrap();
     log::debug!(" - loading settings = {:?}", settings);
     // Save the host and port
-    let host = settings.host();
-    let port = settings.port();
+    let host = settings.host.clone();
+    let port = settings.port;
     // Create a token cache map as web data
-    let token_caches = web::Data::new(AccessTokenCacheMap::new(settings.subscriptions()));
+    let token_caches = web::Data::new(AccessTokenCacheMap::new(&settings.subscriptions));
     // Make the settings available as web data
     let settings_data = web::Data::new(settings);
     // Start the Actix server

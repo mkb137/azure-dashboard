@@ -82,20 +82,11 @@ pub async fn elastic_pool(
         .await
         .unwrap();
     for database_usage_response in database_usage_responses {
-        // Look for a "database_size" value
-        if let Some(value) = database_usage_response.find_value_by_name("database_size") {
-            // If found, use the current value as the size and the limit as the max size.
-            database_size_used += value.properties().current_value().round() as u64;
-        } else {
-            log::debug!(" - failed to find 'database_size' value.")
-        }
-        // Look for a "database_allocated_size" value
-        if let Some(value) = database_usage_response.find_value_by_name("database_allocated_size") {
-            // If found, use the current value as the allocated size.  The limit should be the same as above.
-            database_size_allocated += value.properties().current_value().round() as u64;
-        } else {
-            log::debug!(" - failed to find 'database_allocated_size' value.")
-        }
+        // Get the databases sizes
+        let (size_used, size_allocated, _size_max) = database_usage_response.get_sizes();
+        // Add them to the elastic pool's sizes
+        database_size_used += size_used;
+        database_size_allocated += size_allocated;
         log::debug!(
             " - adding sizes size = {:?}, allocated = {:?}",
             database_size_used,

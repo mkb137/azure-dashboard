@@ -36,47 +36,24 @@ use serde::{Deserialize, Serialize};
 #[serde(rename_all = "camelCase")]
 pub struct DatabaseUsageProperties {
     // The display name of the value, e.g. "Database Size"
-    display_name: String,
+    pub display_name: String,
     // The current value of the property, e.g. if Database Size, the size in bytes.
-    current_value: f64,
+    pub current_value: f64,
     // The maximum value of the property, e.g. if Database Size, the maximum size in bytes.
-    limit: f64,
+    pub limit: f64,
     // The data unit, e.g. "Bytes"
-    unit: String,
+    pub unit: String,
 }
-
-impl DatabaseUsageProperties {
-    pub fn display_name(&self) -> String {
-        self.display_name.clone()
-    }
-    pub fn current_value(&self) -> f64 {
-        self.current_value
-    }
-    pub fn limit(&self) -> f64 {
-        self.limit
-    }
-    pub fn unit(&self) -> String {
-        self.unit.clone()
-    }
-}
-
 // A usage value.
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct DatabaseUsage {
     // The value properties
-    properties: DatabaseUsageProperties,
+    pub properties: DatabaseUsageProperties,
     // The value name, e.g. "database_size"
-    name: String,
+    pub name: String,
 }
-
 impl DatabaseUsage {
-    pub fn properties(&self) -> &DatabaseUsageProperties {
-        &self.properties
-    }
-    pub fn name(&self) -> String {
-        self.name.clone()
-    }
     // Returns true if the usage has the given name.
     pub fn has_name(&self, name: &str) -> bool {
         self.name.eq(name)
@@ -89,16 +66,41 @@ impl DatabaseUsage {
 pub struct DatabaseUsageResponse {
     // The response "value", which is a list of values
     #[serde(rename(deserialize = "value"))]
-    values: Vec<DatabaseUsage>,
+    pub values: Vec<DatabaseUsage>,
 }
 
 impl DatabaseUsageResponse {
-    pub fn values(&self) -> &Vec<DatabaseUsage> {
-        &self.values
-    }
     // Finds the first usage with the given name
     pub fn find_value_by_name(&self, name: &str) -> Option<&DatabaseUsage> {
         self.values.iter().find(|u| u.has_name(name))
+    }
+    // Get the sizes (used, allocated, and max)
+    pub fn get_sizes(&self) -> (u64, u64, u64) {
+        // Set default values for the sizes we're looking for
+        let mut database_size_used: u64 = 0;
+        let mut database_size_max: u64 = 0;
+        let mut database_size_allocated: u64 = 0;
+        // Look for a "database_size" value
+        if let Some(value) = self.find_value_by_name("database_size") {
+            // If found, use the current value as the size and the limit as the max size.
+            database_size_used = value.properties.current_value.round() as u64;
+            database_size_max = value.properties.limit.round() as u64;
+        } else {
+            log::debug!(" - failed to find 'database_size' value.")
+        }
+        // Look for a "database_allocated_size" value
+        if let Some(value) = self.find_value_by_name("database_allocated_size") {
+            // If found, use the current value as the allocated size.  The limit should be the same as above.
+            database_size_allocated = value.properties.current_value.round() as u64;
+        } else {
+            log::debug!(" - failed to find 'database_allocated_size' value.")
+        }
+        // Return the sizes
+        (
+            database_size_used,
+            database_size_allocated,
+            database_size_max,
+        )
     }
 }
 

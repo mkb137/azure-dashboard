@@ -150,10 +150,10 @@ impl AccessTokenCache {
     async fn update_token(&mut self) -> anyhow::Result<String> {
         // Get an access token using the settings in the subscription
         let new_token = get_access_token(
-            self.subscription_settings.token_url(),
-            self.subscription_settings.client_id(),
-            self.subscription_settings.client_secret(),
-            self.subscription_settings.resource(),
+            self.subscription_settings.token_url.clone(),
+            self.subscription_settings.client_id.clone(),
+            self.subscription_settings.client_secret.clone(),
+            self.subscription_settings.resource.clone(),
         )
         .await?;
         // Save a copy of the access token value
@@ -211,7 +211,7 @@ impl AccessTokenCacheMap {
         for subscription in subscriptions {
             // Add a new cache
             caches.insert(
-                subscription.subscription_id(),
+                subscription.subscription_id.clone(),
                 AccessTokenCache::new(subscription.clone()),
             );
         }
