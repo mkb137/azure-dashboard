@@ -10,13 +10,24 @@ use crate::AzureDashboardError::AzureApiError;
 use crate::{AccessTokenCacheMap, AzureDashboardError};
 use actix_web::{get, web};
 
+#[derive(Debug, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ElasticPoolViewModel {
+    // The amount of data used
+    database_size_used: u64,
+    // The amount of data allocated
+    database_size_allocated: u64,
+    // The maximum size of the database
+    database_size_max: u64,
+}
+
 // Returns info related to an elastic pool as JSON
 #[get("/api/subscription/{subscription_id}/resource-group/{resource_group_name}/server/{server_name}/elastic-pool/{elastic_pool_name}")]
 pub async fn elastic_pool(
     path: web::Path<(String, String, String, String)>,
     settings: web::Data<DashboardSettings>,
     token_cache_map: web::Data<AccessTokenCacheMap>,
-) -> Result<web::Json<DatabaseListResponse>, AzureDashboardError> {
+) -> Result<web::Json<ElasticPoolViewModel>, AzureDashboardError> {
     log::debug!("elastc_pool");
     // Get the path components
     let (subscription_id, resource_group_name, server_name, elastic_pool_name) = path.into_inner();
@@ -54,7 +65,7 @@ pub async fn elastic_pool(
 
     // We want database properties
     let database_size_max: u64 = elastic_pool_response.properties.max_size_bytes;
-    let mut database_size: u64 = 0;
+    let mut database_size_used: u64 = 0;
     let mut database_size_allocated: u64 = 0;
     // Get the futures that will fetch the database usages for each database
     let database_usage_response_futures = database_list_response.values().iter().map(|database|
@@ -74,7 +85,7 @@ pub async fn elastic_pool(
         // Look for a "database_size" value
         if let Some(value) = database_usage_response.find_value_by_name("database_size") {
             // If found, use the current value as the size and the limit as the max size.
-            database_size += value.properties().current_value().round() as u64;
+            database_size_used += value.properties().current_value().round() as u64;
         } else {
             log::debug!(" - failed to find 'database_size' value.")
         }
@@ -87,15 +98,21 @@ pub async fn elastic_pool(
         }
         log::debug!(
             " - adding sizes size = {:?}, allocated = {:?}",
-            database_size,
+            database_size_used,
             database_size_allocated
         );
     }
     log::debug!(
         " - final, size = {:?}, allocated = {:?}",
-        database_size,
+        database_size_used,
         database_size_allocated
     );
-
-    Ok(web::Json(database_list_response))
+    // Create the view model
+    let view_model = ElasticPoolViewModel {
+        database_size_allocated,
+        database_size_used,
+        database_size_max,
+    };
+    // Return the view model as json
+    Ok(web::Json(view_model))
 }
