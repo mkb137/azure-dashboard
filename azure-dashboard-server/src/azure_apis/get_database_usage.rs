@@ -1,5 +1,6 @@
 use crate::{AccessTokenCacheMap, AzureDashboardError};
 
+use serde::{Deserialize, Serialize};
 // Usage responses will be of the form:
 // ```json
 // {
@@ -31,7 +32,7 @@ use crate::{AccessTokenCacheMap, AzureDashboardError};
 // ```
 
 // The properties within a usage value.
-#[derive(Debug, serde::Deserialize)]
+#[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct DatabaseUsageProperties {
     // The display name of the value, e.g. "Database Size"
@@ -60,7 +61,7 @@ impl DatabaseUsageProperties {
 }
 
 // A usage value.
-#[derive(Debug, serde::Deserialize)]
+#[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct DatabaseUsage {
     // The value properties
@@ -83,7 +84,7 @@ impl DatabaseUsage {
 }
 
 // The response set by the server when requesting database usages
-#[derive(Debug, serde::Deserialize)]
+#[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct DatabaseUsageResponse {
     // The response "value", which is a list of values

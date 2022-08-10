@@ -20,6 +20,8 @@ loggers:
     level: warn
   reqwest:
     level: warn
+  azure_dashboard_server::azure_token_cache:
+    level: warn
   azure_dashboard_server::static_file_handlers:
     level: warn
   azure_dashboard_server::settings:

@@ -1,58 +1,60 @@
 use crate::AccessTokenCacheMap;
-use chrono::Utc;
+use chrono::{DateTime, Utc};
 
-#[derive(Debug, serde::Deserialize, serde::Serialize)]
+use serde::{Deserialize, Serialize};
+
+#[derive(Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ElasticPoolPerDatabaseSettings {
     // The minimum number of databases in the pool?
-    min_capacity: f64,
+    pub min_capacity: f64,
     // The maximum number of databases in the pool?
-    max_capacity: f64,
+    pub max_capacity: f64,
 }
 
-#[derive(Debug, serde::Deserialize, serde::Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ElasticPoolProperties {
     // The pool state, e.g. "Ready"
-    state: String,
+    pub state: String,
     // The date the pool was created
-    creation_date: chrono::DateTime<Utc>,
+    pub creation_date: DateTime<Utc>,
     // The pool maximum size in bytes
-    max_size_bytes: u64,
+    pub max_size_bytes: u64,
     // The per-database settings
-    per_database_settings: ElasticPoolPerDatabaseSettings,
+    pub per_database_settings: ElasticPoolPerDatabaseSettings,
     // Whether the pool is zone-redundant
-    zone_redundant: bool,
+    pub zone_redundant: bool,
 }
 
-#[derive(Debug, serde::Deserialize, serde::Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ElasticPoolSku {
     // The SKU name, e.g. "StandardPool"
-    name: String,
+    pub name: String,
     // The SKU tier, e.g. "Standard"
-    tier: String,
+    pub tier: String,
     // The tier capacity
-    capacity: i16,
+    pub capacity: i16,
 }
-#[derive(Debug, serde::Deserialize, serde::Serialize)]
+#[derive(Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ElasticPool {
     // The pool's SKU
-    sku: ElasticPoolSku,
+    pub sku: ElasticPoolSku,
     // The pool kind, e.g. "pool"
-    kind: String,
+    pub kind: String,
     // The pool properties
-    properties: ElasticPoolProperties,
+    pub properties: ElasticPoolProperties,
     // The pool location, e.g. "westus2"
-    location: String,
+    pub location: String,
     // The pool ID
-    id: String,
+    pub id: String,
     // The pool name
-    name: String,
+    pub name: String,
     // The pool type, e.g. "Microsoft.Sql/servers/elasticPools"
     #[serde(rename(deserialize = "type"))]
-    pool_type: String,
+    pub pool_type: String,
 }
 
 pub async fn get_elastic_pool(
