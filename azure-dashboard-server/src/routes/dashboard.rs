@@ -1,11 +1,13 @@
 use crate::settings::{
-    DashboardSettings, DatabaseSettings, ElasticPoolSettings, SubscriptionSettings,
+    DashboardSettings, DatabaseSettings, ElasticPoolSettings, ResourceGroupSettings,
+    SubscriptionSettings,
 };
 use crate::AzureDashboardError;
 use actix_web::{get, web};
 
 // Settings for a database to be displayed in the dashboard.
 #[derive(Debug, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
 struct DatabaseViewModel {
     // The server name
     server_name: String,
@@ -22,8 +24,10 @@ impl From<&DatabaseSettings> for DatabaseViewModel {
         }
     }
 }
+
 // Settings for a database to be displayed in the dashboard.
 #[derive(Debug, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
 struct ElasticPoolViewModel {
     // The server name
     server_name: String,
@@ -40,25 +44,24 @@ impl From<&ElasticPoolSettings> for ElasticPoolViewModel {
         }
     }
 }
-// The settings relating to a single subscription.
+
+// Settings for a resource group.
 #[derive(Debug, serde::Serialize)]
-struct SubscriptionViewModel {
-    // The display name for this subscription
-    display_name: String,
-    // The subscription ID (a GUID)
-    subscription_id: String,
+#[serde(rename_all = "camelCase")]
+struct ResourceGroupViewModel {
+    // The resource group name
+    resource_group_name: String,
     // The databases to be displayed in the dashboard
     databases: Vec<DatabaseViewModel>,
     // The elastic pools to be displayed in the dashboard
     elastic_pools: Vec<ElasticPoolViewModel>,
 }
 
-// Creates a subscription from the settings.
-impl From<&SubscriptionSettings> for SubscriptionViewModel {
-    fn from(value: &SubscriptionSettings) -> Self {
+// Creates an resource group from the settings.
+impl From<&ResourceGroupSettings> for ResourceGroupViewModel {
+    fn from(value: &ResourceGroupSettings) -> Self {
         Self {
-            display_name: value.display_name(),
-            subscription_id: value.subscription_id(),
+            resource_group_name: value.resource_group_name(),
             databases: value
                 .databases()
                 .iter()
@@ -73,8 +76,36 @@ impl From<&SubscriptionSettings> for SubscriptionViewModel {
     }
 }
 
+// The settings relating to a single subscription.
+#[derive(Debug, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
+struct SubscriptionViewModel {
+    // The display name for this subscription
+    display_name: String,
+    // The subscription ID (a GUID)
+    subscription_id: String,
+    // The resource groups in the subscription.
+    resource_groups: Vec<ResourceGroupViewModel>,
+}
+
+// Creates a subscription from the settings.
+impl From<&SubscriptionSettings> for SubscriptionViewModel {
+    fn from(value: &SubscriptionSettings) -> Self {
+        Self {
+            display_name: value.display_name(),
+            subscription_id: value.subscription_id(),
+            resource_groups: value
+                .resource_groups()
+                .iter()
+                .map(|d| d.into())
+                .collect::<Vec<_>>(),
+        }
+    }
+}
+
 // The dashboard settings.
 #[derive(Debug, serde::Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct DashboardViewModel {
     // The subscriptions.
     subscriptions: Vec<SubscriptionViewModel>,

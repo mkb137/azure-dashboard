@@ -32,6 +32,28 @@ impl ElasticPoolSettings {
     }
 }
 
+// Settings for a resource group.
+#[derive(Clone, Debug, serde::Deserialize)]
+pub struct ResourceGroupSettings {
+    // The resource group name
+    resource_group_name: String,
+    // The databases to be displayed in the dashboard
+    databases: Vec<DatabaseSettings>,
+    // The elastic pools to be displayed in the dashboard
+    elastic_pools: Vec<ElasticPoolSettings>,
+}
+impl ResourceGroupSettings {
+    pub fn resource_group_name(&self) -> String {
+        self.resource_group_name.clone()
+    }
+    pub fn databases(&self) -> &Vec<DatabaseSettings> {
+        &self.databases
+    }
+    pub fn elastic_pools(&self) -> &Vec<ElasticPoolSettings> {
+        &self.elastic_pools
+    }
+}
+
 // The settings relating to a single subscription.
 #[derive(Clone, Debug, serde::Deserialize)]
 pub struct SubscriptionSettings {
@@ -52,10 +74,8 @@ pub struct SubscriptionSettings {
     tenant_id: String,
     // The Azure OAuth2 base auth URL, e.g. https://login.microsoftonline.com/TENANT_ID/oauth2/token
     token_url: String,
-    // The databases to be displayed in the dashboard
-    databases: Vec<DatabaseSettings>,
-    // The elastic pools to be displayed in the dashboard
-    elastic_pools: Vec<ElasticPoolSettings>,
+    // The resource groups
+    resource_groups: Vec<ResourceGroupSettings>,
 }
 impl SubscriptionSettings {
     pub fn client_id(&self) -> String {
@@ -79,11 +99,8 @@ impl SubscriptionSettings {
     pub fn token_url(&self) -> String {
         self.token_url.clone()
     }
-    pub fn databases(&self) -> &Vec<DatabaseSettings> {
-        &self.databases
-    }
-    pub fn elastic_pools(&self) -> &Vec<ElasticPoolSettings> {
-        &self.elastic_pools
+    pub fn resource_groups(&self) -> &Vec<ResourceGroupSettings> {
+        &self.resource_groups
     }
 }
 

@@ -51,8 +51,8 @@ async fn main() -> anyhow::Result<()> {
             // Make the settings available to all routes
             .app_data(settings_data.clone())
             // Add API routes
-            .route("/hello", web::get().to(|| async { "Hello world" }))
             .service(routes::dashboard::dashboard)
+            .service(routes::database::database)
             // Add static file handling
             .route("/{filename:.*.*}", web::get().to(static_file))
     })

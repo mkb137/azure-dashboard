@@ -103,6 +103,10 @@ async fn get_access_token(
     params.insert("client_id", client_id.as_str());
     params.insert("client_secret", client_secret.as_str());
     params.insert("resource", resource.as_str());
+    params.insert(
+        "scope",
+        "subscriptions/72c42748-5070-4db3-bd42-e250884dbdd5",
+    );
     // Post the request
     let response = client.post(token_url).form(&params).send().await?;
     // If the response was successful...

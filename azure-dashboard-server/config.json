@@ -9,20 +9,22 @@
             "client_id": "client_id",
             "client_secret": "client_secret",
             "resource": "https://management.azure.com",
-            "databases": [
-                {
-                    "server_name": "my-server-name1",
-                    "database_name": "my-db-name"
-                }
-            ],
-            "elastic_pools": [
-                {
-                    "server_name": "my-server-name-2",
-                    "elastic_pool_name": "my-ep-name"
-                }
-            ]
-
-
+            "resource_groups": {
+                "resource_group_name": "my-resource_group",
+                "databases": [
+                    {
+                        "resource_group": "",
+                        "server_name": "my-server-name1",
+                        "database_name": "my-db-name"
+                    }
+                ],
+                "elastic_pools": [
+                    {
+                        "server_name": "my-server-name-2",
+                        "elastic_pool_name": "my-ep-name"
+                    }
+                ]
+            }
         }
     ]
 }
