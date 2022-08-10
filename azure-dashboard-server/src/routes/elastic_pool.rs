@@ -28,7 +28,7 @@ pub async fn elastic_pool(
     settings: web::Data<DashboardSettings>,
     token_cache_map: web::Data<AccessTokenCacheMap>,
 ) -> Result<web::Json<ElasticPoolViewModel>, AzureDashboardError> {
-    log::debug!("elastc_pool");
+    log::debug!("elastic_pool");
     // Get the path components
     let (subscription_id, resource_group_name, server_name, elastic_pool_name) = path.into_inner();
     log::debug!(
@@ -63,8 +63,9 @@ pub async fn elastic_pool(
     .map_err(|e| AzureApiError(e.to_string()))?;
     log::debug!(" - got database list response");
 
-    // We want database properties
+    // We have the size of the elastic pool as a whole.
     let database_size_max: u64 = elastic_pool_response.properties.max_size_bytes;
+    // Since there's no elastic pool usage API, we need to sum the usages of each database in the pool.
     let mut database_size_used: u64 = 0;
     let mut database_size_allocated: u64 = 0;
     // Get the futures that will fetch the database usages for each database
