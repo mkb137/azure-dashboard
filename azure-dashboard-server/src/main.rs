@@ -15,20 +15,20 @@ mod errors;
 mod routes;
 mod settings;
 mod static_file_handlers;
-
-#[get("/api/hello/{name}")]
-async fn greet(
-    name: web::Path<String>,
-    data: web::Data<AccessTokenCacheMap>,
-) -> Result<String, AzureDashboardError> {
-    log::debug!("greet - name = {name}");
-    let name_value = name.into_inner();
-    let access_token = data
-        .access_token(name_value.clone())
-        .await
-        .map_err(move |e| AzureDashboardError::CouldNotGetAccessToken(name_value))?;
-    Ok(access_token)
-}
+//
+// #[get("/api/hello/{name}")]
+// async fn greet(
+//     name: web::Path<String>,
+//     data: web::Data<AccessTokenCacheMap>,
+// ) -> Result<String, AzureDashboardError> {
+//     log::debug!("greet - name = {name}");
+//     let name_value = name.into_inner();
+//     let access_token = data
+//         .access_token(name_value.clone())
+//         .await
+//         .map_err(move |e| AzureDashboardError::CouldNotGetAccessToken(name_value))?;
+//     Ok(access_token)
+// }
 
 #[actix_web::main]
 async fn main() -> anyhow::Result<()> {
@@ -54,6 +54,7 @@ async fn main() -> anyhow::Result<()> {
             // Add API routes
             .service(routes::dashboard::dashboard)
             .service(routes::database::database)
+            .service(routes::elastic_pool::elastic_pool)
             // Add static file handling
             .route("/{filename:.*.*}", web::get().to(static_file))
     })

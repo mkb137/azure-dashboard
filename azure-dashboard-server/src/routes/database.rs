@@ -29,8 +29,8 @@ pub async fn database(
     log::debug!(
         "database - \
          subscription_id = {subscription_id}, \
-         server_name = {server_name}, \
          resource_group_name = {resource_group_name}, \
+         server_name = {server_name}, \
          database_name = {database_name}",
     );
     // Get the database usages

@@ -73,13 +73,6 @@ impl TryFrom<TokenResponse> for AccessToken {
             .map_err(anyhow::Error::from)?;
         // Add it to "now" to get the expiry date
         let expiry_date = chrono::Utc::now() + chrono::Duration::seconds(expires_in);
-        // // Try to convert the expiry date string to seconds
-        // let unix_expiry_date = value
-        //     .expires_on
-        //     .parse::<i64>()
-        //     .map_err(anyhow::Error::from)?;
-        // // Create a UTC date
-        // let expiry_date = chrono::Utc.timestamp(unix_expiry_date, 0);
         // Create the access token
         let access_token = AccessToken::new(value.access_token(), expiry_date);
         // Return it
