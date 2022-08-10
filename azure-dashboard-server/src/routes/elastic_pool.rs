@@ -56,20 +56,21 @@ pub async fn elastic_pool(
     let database_size_max: u64 = elastic_pool_response.properties.max_size_bytes;
     let mut database_size: u64 = 0;
     let mut database_size_allocated: u64 = 0;
-
-    // For each database...
-    for database in database_list_response.values() {
+    // Get the futures that will fetch the database usages for each database
+    let database_usage_response_futures = database_list_response.values().iter().map(|database|
         // Get the database usages
-        let database_usage_response = get_database_usage(
+        get_database_usage(
             token_cache_map.get_ref(),
             subscription_id.clone(),
             resource_group_name.clone(),
             server_name.clone(),
             database.name.clone(),
-        )
+        ));
+    // Execute the futures in parallel
+    let database_usage_responses = futures::future::try_join_all(database_usage_response_futures)
         .await
-        // If we got an error, convert it to an Azure API error
-        .map_err(|e| AzureApiError(e.to_string()))?;
+        .unwrap();
+    for database_usage_response in database_usage_responses {
         // Look for a "database_size" value
         if let Some(value) = database_usage_response.find_value_by_name("database_size") {
             // If found, use the current value as the size and the limit as the max size.
@@ -85,8 +86,7 @@ pub async fn elastic_pool(
             log::debug!(" - failed to find 'database_allocated_size' value.")
         }
         log::debug!(
-            " - adding sizes for db {:?}, size = {:?}, allocated = {:?}",
-            database.name,
+            " - adding sizes size = {:?}, allocated = {:?}",
             database_size,
             database_size_allocated
         );
