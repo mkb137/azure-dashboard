@@ -4,9 +4,9 @@
 
 use crate::azure_token_cache::{AccessTokenCache, AccessTokenCacheMap};
 use crate::errors::AzureDashboardError;
-use crate::settings::Settings;
+use crate::settings::DashboardSettings;
 use crate::static_file_handlers::static_file;
-use actix_web::{get, web, App, HttpRequest, HttpServer, Responder};
+use actix_web::{get, web, App, HttpRequest, HttpServer};
 use std::sync::Mutex;
 
 mod azure_token_cache;
@@ -34,7 +34,7 @@ async fn main() -> anyhow::Result<()> {
     // Initialize logging
     log4rs::init_file("log4rs.yaml", Default::default()).unwrap_or(());
     log::debug!(" - loading the configuration file");
-    let settings = Settings::new().unwrap();
+    let settings = DashboardSettings::new().unwrap();
     log::debug!(" - loading settings = {:?}", settings);
     // Save the host and port
     let host = settings.host();
@@ -52,7 +52,7 @@ async fn main() -> anyhow::Result<()> {
             .app_data(settings_data.clone())
             // Add API routes
             .route("/hello", web::get().to(|| async { "Hello world" }))
-            .service(greet)
+            .service(routes::dashboard::dashboard)
             // Add static file handling
             .route("/{filename:.*.*}", web::get().to(static_file))
     })

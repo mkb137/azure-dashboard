@@ -8,7 +8,21 @@
             "subscription_id": "subscription_id",
             "client_id": "client_id",
             "client_secret": "client_secret",
-            "resource": "https://management.azure.com"
+            "resource": "https://management.azure.com",
+            "databases": [
+                {
+                    "server_name": "my-server-name1",
+                    "database_name": "my-db-name"
+                }
+            ],
+            "elastic_pools": [
+                {
+                    "server_name": "my-server-name-2",
+                    "elastic_pool_name": "my-ep-name"
+                }
+            ]
+
+
         }
     ]
 }
