@@ -9,6 +9,7 @@ use crate::static_file_handlers::static_file;
 use actix_web::{get, web, App, HttpRequest, HttpServer};
 use std::sync::Mutex;
 
+mod azure_apis;
 mod azure_token_cache;
 mod errors;
 mod routes;
