@@ -38,6 +38,7 @@ pub async fn elastic_pool_usage(
          server_name = {server_name}, \
          elastic_pool_name = {elastic_pool_name}",
     );
+    log::debug!(" - getting elastic pool info");
     // Get the elastic pool info
     let elastic_pool_response = get_elastic_pool(
         token_cache_map.get_ref(),
@@ -50,6 +51,7 @@ pub async fn elastic_pool_usage(
     // If we got an error, convert it to an Azure API error
     .map_err(|e| AzureApiError(e.to_string()))?;
     log::debug!(" - got elastic pool response");
+    log::debug!(" - getting elastic pool list");
     // Get the databases in the elastic pool
     let database_list_response = list_databases_in_elastic_pool(
         token_cache_map.get_ref(),

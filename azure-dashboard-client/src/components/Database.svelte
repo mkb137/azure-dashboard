@@ -4,6 +4,7 @@
     import {onMount} from "svelte";
     import type {DatabaseViewModel, ResourceGroupViewModel, SubscriptionViewModel} from "../apis/get-dashboard";
     import {showError} from "../apis/api-utils";
+    import UsageGauge from "./UsageGauge.svelte";
 
     // The parent subscription
     export let subscription: SubscriptionViewModel
@@ -27,6 +28,13 @@
 <div class="database card border-0">
     <div class="card-body">
         <h5 class="card-title">{database.serverName}.{database.databaseName}</h5>
+        {#if undefined !== databaseUsage}
+            <UsageGauge
+                used={databaseUsage.databaseSizeUsed}
+                allocated={databaseUsage.databaseSizeAllocated}
+                total={databaseUsage.databaseSizeMax}
+            />
+        {/if}
     </div>
 </div>
 

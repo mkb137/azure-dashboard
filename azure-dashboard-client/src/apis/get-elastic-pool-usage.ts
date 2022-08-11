@@ -11,4 +11,4 @@ export type ElasticPoolUsageViewModel = {
 
 // Fetches an elastic pool from the server.
 export const getElasticPoolUsage = (subscriptionId: string, resourceGroupName: string, serverName: string, elasticPoolName: string): Promise<ElasticPoolUsageViewModel> =>
-    getAsync<ElasticPoolUsageViewModel>(`/api/subscription/${subscriptionId}/resource-group/${resourceGroupName}/server/${serverName}/elastic-pool/${elasticPoolName}/usage`)
+    getAsync<ElasticPoolUsageViewModel>(`api/subscription/${subscriptionId}/resource-group/${resourceGroupName}/server/${serverName}/elastic-pool/${elasticPoolName}/usage`)
