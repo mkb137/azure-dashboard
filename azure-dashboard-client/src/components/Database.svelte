@@ -23,6 +23,14 @@
             .catch(showError(`Failed to get usage info for database ${database.serverName}.${database.databaseName}`))
     })
 </script>
-<div class="database">
-    <h4>{database.serverName}.{database.databaseName}</h4>
+
+<div class="database card border-0">
+    <div class="card-body">
+        <h5 class="card-title">{database.serverName}.{database.databaseName}</h5>
+    </div>
 </div>
+
+<style lang="scss">
+
+</style>
+

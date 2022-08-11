@@ -24,10 +24,12 @@
             <span class="visually-hidden">Loading...</span>
         </div>
     {:else}
-        <h1>Dashboard</h1>
         {#each dashboard.subscriptions as subscription, i}
             <Subscription {subscription}/>
         {/each}
     {/if}
 </div>
 
+<style lang="scss">
+
+</style>

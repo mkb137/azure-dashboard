@@ -22,6 +22,13 @@
             .catch(showError(`Failed to get usage info for elastic pool ${elasticPool.serverName}.${elasticPool.elasticPoolName}`))
     })
 </script>
-<div class="elasticPool">
-    <h4>{elasticPool.serverName}.{elasticPool.elasticPoolName}</h4>
+
+<div class="elastic-pool card border-0">
+    <div class="card-body">
+        <h5 class="card-title">{elasticPool.elasticPoolName}</h5>
+    </div>
 </div>
+
+<style lang="scss">
+</style>
+

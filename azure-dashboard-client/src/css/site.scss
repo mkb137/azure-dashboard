@@ -3,6 +3,14 @@
 @import "../../node_modules/bootstrap/scss/variables";
 
 :root, body {
-    background-color: $dark;
-    color: $light;
+    background-color: #f8fafb;
+    color: $dark;
+}
+div.card {
+    width: 30vw;
+    min-width: 350px;
+    max-width: 500px;
+    height: 400px;
+    margin: 20px;
+    box-shadow: 5px 5px 10px 0px #dcdcef;
 }
