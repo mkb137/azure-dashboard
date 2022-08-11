@@ -1,9 +1,8 @@
 
 // Bootstrap's variables (which will use ours where set)
 @import "../../node_modules/bootstrap/scss/variables";
-@import "../../node_modules/highcharts/css/highcharts";
 :root, body {
-    background-color: #f8fafb;
+    background-color: hsl(201.8, 26.8%, 92%);
     color: $dark;
 }
 div.card {
@@ -11,7 +10,8 @@ div.card {
     //min-width: 350px;
     //max-width: 500px;
     margin: 20px;
-    box-shadow: 5px 5px 10px 0px #dcdcef;
+    box-shadow: 5px 5px 10px 0 hsl(201.8, 26.8%, 72%);
+    border-radius: 20px !important;
 }
 div.chart-container {
 }

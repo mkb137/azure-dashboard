@@ -1,15 +1,5 @@
-<script lang="ts" context="module">
-    import * as Highcharts from 'highcharts'
-    import HighchartsMore from 'highcharts/highcharts-more'
-    import HighchartsSolidGauge from 'highcharts/modules/solid-gauge'
-    // Initialize modules
-    HighchartsMore(Highcharts)
-    HighchartsSolidGauge(Highcharts)
-
-</script>
 <script lang="ts">
     import * as lodash from 'lodash'
-    import {onMount} from "svelte";
 
     // The width of the gauge
     const SVG_WIDTH = 380;
@@ -28,7 +18,7 @@
         // Get the final hue
         let hue = lodash.round( hueMin + delta, 0 )
         // Create an HSL color from the result
-        return `hsl(${hue}, 100%, 50%)`
+        return `hsl(${hue}, 36%, 50%)`
     }
 
     /**
@@ -164,11 +154,11 @@
 
             <!-- Draw the usages -->
             <text x={SVG_WIDTH / 2} y="100" class="size-value">{usedGb.toFixed(2)}</text>
-            <text x={SVG_WIDTH / 2} y="100" class="size-label">&nbsp;GB Used</text>
+            <text x={SVG_WIDTH / 2} y="100" class="size-label">&nbsp;GB used</text>
             <text x={SVG_WIDTH / 2} y="120" class="size-value">{allocatedGb.toFixed(2)}</text>
-            <text x={SVG_WIDTH / 2} y="120" class="size-label">&nbsp;GB Allocated</text>
+            <text x={SVG_WIDTH / 2} y="120" class="size-label">&nbsp;GB allocated</text>
             <text x={SVG_WIDTH / 2} y="140" class="size-value">{totalGb.toFixed(2)}</text>
-            <text x={SVG_WIDTH / 2} y="140" class="size-label">&nbsp;GB Total</text>
+            <text x={SVG_WIDTH / 2} y="140" class="size-label">&nbsp;GB total</text>
         </g>
     </svg>
 </div>
