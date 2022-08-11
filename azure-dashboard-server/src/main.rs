@@ -6,7 +6,7 @@ use crate::azure_token_cache::{AccessTokenCache, AccessTokenCacheMap};
 use crate::errors::AzureDashboardError;
 use crate::settings::DashboardSettings;
 use crate::static_file_handlers::static_file;
-use actix_web::{get, web, App, HttpRequest, HttpServer};
+use actix_web::{get, http, web, App, HttpRequest, HttpServer};
 use std::sync::Mutex;
 
 mod azure_apis;
@@ -46,15 +46,23 @@ async fn main() -> anyhow::Result<()> {
     let settings_data = web::Data::new(settings);
     // Start the Actix server
     HttpServer::new(move || {
+        // Configure cords
+        let cors = actix_cors::Cors::default()
+            .allow_any_origin()
+            .allow_any_method()
+            .allowed_header(http::header::CONTENT_TYPE);
+
         App::new()
+            // Add cors
+            .wrap(cors)
             // Make the token cache map available to all routes
             .app_data(token_caches.clone())
             // Make the settings available to all routes
             .app_data(settings_data.clone())
             // Add API routes
             .service(routes::dashboard::dashboard)
-            .service(routes::database::database)
-            .service(routes::elastic_pool::elastic_pool)
+            .service(routes::database_usage::database_usage)
+            .service(routes::elastic_pool_usage::elastic_pool_usage)
             // Add static file handling
             .route("/{filename:.*.*}", web::get().to(static_file))
     })

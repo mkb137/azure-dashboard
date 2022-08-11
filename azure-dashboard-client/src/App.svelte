@@ -1,8 +1,7 @@
 <script lang="ts">
     import {ToastContainer} from "./components/index.js";
-    import SubPage from "./components/SubPage.svelte";
     import {Route, Router} from 'svelte-routing'
-    import Home from "./components/Home.svelte";
+    import Dashboard from "./components/Dashboard.svelte";
     import 'bootstrap'
 </script>
 
@@ -12,10 +11,7 @@
     <Router>
         <!-- Add routes -->
         <Route path="/">
-            <Home/>
-        </Route>
-        <Route path="/sub-page">
-            <SubPage/>
+            <Dashboard/>
         </Route>
     </Router>
 

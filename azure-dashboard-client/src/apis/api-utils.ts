@@ -10,18 +10,19 @@ enum Verb {
 
 /**
  * A standard method for calling an action (GET, POST, etc) on an URL.
- * @param {string} accessToken The authenticated user's access token.
  * @param {string} url The relative URL.
  * @param {string} method The method (GET, POST, etc.)
  * @param {any} message (Optional) The object to go in the request body as JSON.
  * @param {string} contentType (Optional) The content type
  */
-const authorizedActionAsync = async <T>(method: Verb, accessToken: string, url: string, message?: any, contentType = 'application/json'): Promise<T> => {
+const authorizedActionAsync = async <T>(method: Verb, url: string, message?: any, contentType = 'application/json'): Promise<T> => {
     // console.log(`Verb ${method} - url - ${url}`)
-    return fetch(url, {
+    // Compose the full URL by adding the API address
+    const fullUrl = `${import.meta.env.VITE_API_URL}/${url}`
+    // Fetch the URL
+    return fetch(fullUrl, {
         method,
         headers: {
-            Authorization: `Bearer ${accessToken}`,
             'Content-Type': `${contentType}; charset=utf-8`,
             'Accept-Language': navigator.language
         },
@@ -51,11 +52,10 @@ const authorizedActionAsync = async <T>(method: Verb, accessToken: string, url: 
 
 /**
  * A standard GET request.
- * @param {string} accessToken The authenticated user's access token.
  * @param {string} url The URL.
  * @returns
  */
-export const authorizedGetAsync = async <T>(accessToken: string, url: string): Promise<T> => authorizedActionAsync<T>(Verb.GET, accessToken, url)
+export const getAsync = async <T>(url: string): Promise<T> => authorizedActionAsync<T>(Verb.GET, url)
 
 /**
  * Shows an error with a title.

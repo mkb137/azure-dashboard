@@ -1,3 +1,3 @@
 pub mod dashboard;
-pub mod database;
-pub mod elastic_pool;
+pub mod database_usage;
+pub mod elastic_pool_usage;

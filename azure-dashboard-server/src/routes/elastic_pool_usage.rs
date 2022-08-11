@@ -12,7 +12,7 @@ use actix_web::{get, web};
 
 #[derive(Debug, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct ElasticPoolViewModel {
+pub struct ElasticPoolUsageViewModel {
     // The amount of data used
     database_size_used: u64,
     // The amount of data allocated
@@ -22,12 +22,12 @@ pub struct ElasticPoolViewModel {
 }
 
 // Returns info related to an elastic pool as JSON
-#[get("/api/subscription/{subscription_id}/resource-group/{resource_group_name}/server/{server_name}/elastic-pool/{elastic_pool_name}")]
-pub async fn elastic_pool(
+#[get("/api/subscription/{subscription_id}/resource-group/{resource_group_name}/server/{server_name}/elastic-pool/{elastic_pool_name}/usage")]
+pub async fn elastic_pool_usage(
     path: web::Path<(String, String, String, String)>,
     settings: web::Data<DashboardSettings>,
     token_cache_map: web::Data<AccessTokenCacheMap>,
-) -> Result<web::Json<ElasticPoolViewModel>, AzureDashboardError> {
+) -> Result<web::Json<ElasticPoolUsageViewModel>, AzureDashboardError> {
     log::debug!("elastic_pool");
     // Get the path components
     let (subscription_id, resource_group_name, server_name, elastic_pool_name) = path.into_inner();
@@ -100,7 +100,7 @@ pub async fn elastic_pool(
         database_size_allocated
     );
     // Create the view model
-    let view_model = ElasticPoolViewModel {
+    let view_model = ElasticPoolUsageViewModel {
         database_size_allocated,
         database_size_used,
         database_size_max,

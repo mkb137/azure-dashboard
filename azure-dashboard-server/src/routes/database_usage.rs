@@ -8,7 +8,7 @@ use actix_web::{get, web};
 
 #[derive(Debug, serde::Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct DatabaseViewModel {
+pub struct DatabaseUsageViewModel {
     // The amount of data used
     database_size_used: u64,
     // The amount of data allocated
@@ -18,12 +18,12 @@ pub struct DatabaseViewModel {
 }
 
 // Returns info related to a database as JSON
-#[get("/api/subscription/{subscription_id}/resource-group/{resource_group_name}/server/{server_name}/database/{database_name}")]
-pub async fn database(
+#[get("/api/subscription/{subscription_id}/resource-group/{resource_group_name}/server/{server_name}/database/{database_name}/usage")]
+pub async fn database_usage(
     path: web::Path<(String, String, String, String)>,
     settings: web::Data<DashboardSettings>,
     token_cache_map: web::Data<AccessTokenCacheMap>,
-) -> Result<web::Json<DatabaseViewModel>, AzureDashboardError> {
+) -> Result<web::Json<DatabaseUsageViewModel>, AzureDashboardError> {
     // Get the path components
     let (subscription_id, resource_group_name, server_name, database_name) = path.into_inner();
     log::debug!(
@@ -49,7 +49,7 @@ pub async fn database(
     let (database_size_used, database_size_allocated, database_size_max) =
         database_usage_response.get_sizes();
     // Create the view model
-    let view_model = DatabaseViewModel {
+    let view_model = DatabaseUsageViewModel {
         database_size_used,
         database_size_allocated,
         database_size_max,
