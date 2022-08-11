@@ -28,7 +28,7 @@
 
 <div class="database card border-0">
     <div class="card-body">
-        <h5 class="card-title">{database.serverName}.{database.databaseName}</h5>
+        <h5 class="card-title mb-4">{database.serverName}.{database.databaseName}</h5>
         {#if undefined === databaseUsage}
             <LoadingSpinner/>
         {:else}
@@ -42,6 +42,9 @@
 </div>
 
 <style lang="scss">
+    div.database {
+        background-color: white;// hsla(126, 100%, 97%, 1);
+    }
 
 </style>
 

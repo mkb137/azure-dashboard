@@ -27,7 +27,7 @@
 
 <div class="elastic-pool card border-0">
     <div class="card-body">
-        <h5 class="card-title">{elasticPool.elasticPoolName}</h5>
+        <h5 class="card-title mb-4">{elasticPool.elasticPoolName}</h5>
         {#if undefined === elasticPoolUsage}
             <LoadingSpinner/>
         {:else}
@@ -41,5 +41,8 @@
 </div>
 
 <style lang="scss">
+    div.elastic-pool {
+        background-color: white;//hsla(204, 100%, 97%, 1);
+    }
 </style>
 
