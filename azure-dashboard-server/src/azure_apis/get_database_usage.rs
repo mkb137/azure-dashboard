@@ -1,4 +1,5 @@
 use crate::{AccessTokenCacheMap, AzureDashboardError};
+use actix_web::http::StatusCode;
 
 use serde::{Deserialize, Serialize};
 // Usage responses will be of the form:
@@ -136,10 +137,19 @@ pub async fn get_database_usage(
         .header("Authorization", format!("Bearer {access_token}"))
         // Make the request
         .send()
-        .await?
-        // Get the response as json
-        .json::<DatabaseUsageResponse>()
         .await?;
-    // Return the response
-    Ok(response)
+    // If successful...
+    if StatusCode::OK == response.status() {
+        // Get the response as json
+        let database_usage = response.json::<DatabaseUsageResponse>().await?;
+        // Return it
+        Ok(database_usage)
+    } else {
+        // Get the response as text
+        let text = response.text().await?;
+        // Log it
+        log::debug!("Error: {text}");
+        // Return that we had an error
+        Err(anyhow::anyhow!("test"))
+    }
 }

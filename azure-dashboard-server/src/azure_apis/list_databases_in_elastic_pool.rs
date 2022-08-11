@@ -1,4 +1,5 @@
 use crate::AccessTokenCacheMap;
+use actix_web::http::StatusCode;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use std::fmt::format;
@@ -50,7 +51,7 @@ pub struct DatabaseSku {
 #[serde(rename_all = "camelCase")]
 pub struct Database {
     // The database's SKU
-    pub sku: DatabaseSku,
+    pub sku: Option<DatabaseSku>,
     // The database kind, e.g. "v12"
     pub kind: String,
     // The database properties
@@ -113,10 +114,19 @@ pub async fn list_databases_in_elastic_pool(
         .header("Authorization", format!("Bearer {access_token}"))
         // Make the request
         .send()
-        .await?
-        // Get the response as json
-        .json::<DatabaseListResponse>()
         .await?;
-    // Return the response
-    Ok(response)
+    // If successful...
+    if StatusCode::OK == response.status() {
+        // Get the response as json
+        let database_list = response.json::<DatabaseListResponse>().await?;
+        // Return it
+        Ok(database_list)
+    } else {
+        // Get the response as text
+        let text = response.text().await?;
+        // Log it
+        log::debug!("Error: {text}");
+        // Return that we had an error
+        Err(anyhow::anyhow!("test"))
+    }
 }

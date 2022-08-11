@@ -1,6 +1,10 @@
-use crate::AccessTokenCacheMap;
+use crate::{AccessTokenCacheMap, AzureDashboardError};
+use actix_web::http;
 use chrono::{DateTime, Utc};
+use reqwest::StatusCode;
+use std::io::repeat;
 
+use crate::AzureDashboardError::AzureApiError;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -41,7 +45,7 @@ pub struct ElasticPoolSku {
 #[serde(rename_all = "camelCase")]
 pub struct ElasticPool {
     // The pool's SKU
-    pub sku: ElasticPoolSku,
+    pub sku: Option<ElasticPoolSku>,
     // The pool kind, e.g. "pool"
     pub kind: String,
     // The pool properties
@@ -87,10 +91,19 @@ pub async fn get_elastic_pool(
         .header("Authorization", format!("Bearer {access_token}"))
         // Make the request
         .send()
-        .await?
-        // Get the response as json
-        .json::<ElasticPool>()
         .await?;
-    // Return the response
-    Ok(response)
+    // If successful...
+    if StatusCode::OK == response.status() {
+        // Get the response as json
+        let elastic_pool = response.json::<ElasticPool>().await?;
+        // Return it
+        Ok(elastic_pool)
+    } else {
+        // Get the response as text
+        let text = response.text().await?;
+        // Log it
+        log::debug!("Error: {text}");
+        // Return that we had an error
+        Err(anyhow::anyhow!("test"))
+    }
 }

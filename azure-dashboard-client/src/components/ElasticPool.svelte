@@ -4,6 +4,8 @@
     import {onMount} from "svelte";
     import type {ElasticPoolViewModel, ResourceGroupViewModel, SubscriptionViewModel} from "../apis/get-dashboard";
     import {showError} from "../apis/api-utils";
+    import UsageGauge from "./UsageGauge.svelte";
+    import LoadingSpinner from "./LoadingSpinner.svelte";
     // The parent subscription
     export let subscription: SubscriptionViewModel
     // The resource-group
@@ -26,6 +28,15 @@
 <div class="elastic-pool card border-0">
     <div class="card-body">
         <h5 class="card-title">{elasticPool.elasticPoolName}</h5>
+        {#if undefined === elasticPoolUsage}
+            <LoadingSpinner/>
+        {:else}
+            <UsageGauge
+                used={elasticPoolUsage.databaseSizeUsed}
+                allocated={elasticPoolUsage.databaseSizeAllocated}
+                total={elasticPoolUsage.databaseSizeMax}
+            />
+        {/if}
     </div>
 </div>
 

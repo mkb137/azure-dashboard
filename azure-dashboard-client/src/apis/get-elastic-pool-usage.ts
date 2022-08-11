@@ -2,11 +2,11 @@ import {getAsync} from "./api-utils";
 
 export type ElasticPoolUsageViewModel = {
     // The amount of data used
-    elasticPoolSizeUsed: number,
+    databaseSizeUsed: number,
     // The amount of data allocated
-    elasticPoolSizeAllocated: number,
+    databaseSizeAllocated: number,
     // The maximum size of the elasticPool
-    elasticPoolSizeMax: number,
+    databaseSizeMax: number,
 }
 
 // Fetches an elastic pool from the server.
