@@ -1,6 +1,6 @@
 <script lang="ts">
     import * as lodash from 'lodash'
-
+    import { fade } from 'svelte/transition';
     // The width of the gauge
     const SVG_WIDTH = 380;
     // The height of the gauge
@@ -139,7 +139,7 @@
 
 </script>
 <div class="text-muted" style:width={`${SVG_WIDTH}px`} style:height={`${SVG_HEIGHT}px`}>
-    <svg viewBox={`0 0 ${SVG_WIDTH} ${SVG_HEIGHT}`}>
+    <svg viewBox={`0 0 ${SVG_WIDTH} ${SVG_HEIGHT}`} transition:fade>
         <g transform="">
             <pattern id={patternId} x="0" y="0" width="2" height="2" patternUnits="userSpaceOnUse">
                 <!-- Two instances of the same checker, only positioned apart on the `x` and `y` axis -->
