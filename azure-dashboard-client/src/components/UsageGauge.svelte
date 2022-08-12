@@ -114,11 +114,11 @@
     }
 
     // The data used.
-    export let used: number;
+    export let used: number = 0;
     // The data allocated.
-    export let allocated: number;
+    export let allocated: number = 0;
     // The data total.
-    export let total: number;
+    export let total: number = 0;
 
     // Get the values in GB
     const usedGb = used / Math.pow(2,30)
@@ -132,12 +132,16 @@
     // Compute the colors for each
     const usedColor = toColor(usedFraction)
     const allocatedColor = toColor(allocatedFraction)
+    console.log(` - allocated fraction = ${allocatedFraction}, allocated color = ${allocatedColor}`)
+
+    // Create a unique ID for our pattern
+    const patternId = lodash.uniqueId('pattern')
 
 </script>
 <div class="text-muted" style:width={`${SVG_WIDTH}px`} style:height={`${SVG_HEIGHT}px`}>
     <svg viewBox={`0 0 ${SVG_WIDTH} ${SVG_HEIGHT}`}>
         <g transform="">
-            <pattern id="pattern-checkers" x="0" y="0" width="2" height="2" patternUnits="userSpaceOnUse">
+            <pattern id={patternId} x="0" y="0" width="2" height="2" patternUnits="userSpaceOnUse">
                 <!-- Two instances of the same checker, only positioned apart on the `x` and `y` axis -->
                 <!-- We will define the `fill` in the CSS for flexible use -->
                 <rect class="checker" x="0" width="1" height="1" y="0" fill={allocatedColor}></rect>
@@ -148,7 +152,7 @@
             <!-- Draw the usage bar from 0 to the used fraction -->
             <path d={computePath(0.0,usedFraction)} stroke="none" fill={usedColor}/>
             <!-- Draw the allocation bar from the used fraction to the allocation fraction -->
-            <path d={computePath(usedFraction,allocatedFraction)} stroke="#ddd" fill="url(#pattern-checkers)"/>
+            <path d={computePath(usedFraction,allocatedFraction)} stroke="#ddd" fill={`url(#${patternId})`}/>
             <!-- Draw the outer border -->
             <path d={computePath(0.0,1.0)} stroke="#ddd" fill="none" stroke-width="0.5"/>
 
