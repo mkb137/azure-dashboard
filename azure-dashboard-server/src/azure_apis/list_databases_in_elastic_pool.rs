@@ -107,26 +107,5 @@ pub async fn list_databases_in_elastic_pool(
     );
     // Create a client
     let client = reqwest::Client::new();
-    let response = client
-        // Get the data from the URL
-        .get(url)
-        // Add the auth header
-        .header("Authorization", format!("Bearer {access_token}"))
-        // Make the request
-        .send()
-        .await?;
-    // If successful...
-    if StatusCode::OK == response.status() {
-        // Get the response as json
-        let database_list = response.json::<DatabaseListResponse>().await?;
-        // Return it
-        Ok(database_list)
-    } else {
-        // Get the response as text
-        let text = response.text().await?;
-        // Log it
-        log::debug!("Error: {text}");
-        // Return that we had an error
-        Err(anyhow::anyhow!("test"))
-    }
+    super::get_json::<DatabaseListResponse>(client, url, access_token).await
 }

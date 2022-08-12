@@ -128,6 +128,7 @@ pub async fn get_database_usage(
         /usages\
         ?api-version=2022-02-01-preview"
     );
+    /*
     // Create a client
     let client = reqwest::Client::new();
     let response = client
@@ -152,4 +153,8 @@ pub async fn get_database_usage(
         // Return that we had an error
         Err(anyhow::anyhow!("test"))
     }
+     */
+    // Create a client
+    let client = reqwest::Client::new();
+    super::get_json::<DatabaseUsageResponse>(client, url, access_token).await
 }

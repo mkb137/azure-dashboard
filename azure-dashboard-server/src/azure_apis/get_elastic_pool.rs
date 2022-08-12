@@ -84,6 +84,7 @@ pub async fn get_elastic_pool(
     );
     // Create a client
     let client = reqwest::Client::new();
+    /*
     let response = client
         // Get the data from the URL
         .get(url)
@@ -106,4 +107,6 @@ pub async fn get_elastic_pool(
         // Return that we had an error
         Err(anyhow::anyhow!("test"))
     }
+     */
+    super::get_json::<ElasticPool>(client, url, access_token).await
 }
