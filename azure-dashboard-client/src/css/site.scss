@@ -2,7 +2,7 @@
 // Bootstrap's variables (which will use ours where set)
 @import "../../node_modules/bootstrap/scss/variables";
 :root, body {
-    background-color: hsl(201.8, 26.8%, 92%);
+    background-color: hsla(228, 0%, 94%, 1);
     color: $dark;
 }
 div.card {
@@ -10,7 +10,7 @@ div.card {
     //min-width: 350px;
     //max-width: 500px;
     margin: 20px;
-    box-shadow: 5px 5px 10px 0 hsl(201.8, 26.8%, 72%);
+    box-shadow: 5px 5px 10px 0 hsla(228, 0%, 80%, 1);
     border-radius: 20px !important;
 }
 div.chart-container {

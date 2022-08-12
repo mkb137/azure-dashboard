@@ -18,7 +18,7 @@
         // Get the final hue
         let hue = lodash.round( hueMin + delta, 0 )
         // Create an HSL color from the result
-        return `hsl(${hue}, 36%, 50%)`
+        return `hsl(${hue}, 90%, 50%)`
     }
 
     /**
