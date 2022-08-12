@@ -1,8 +1,8 @@
 use crate::settings::SubscriptionSettings;
 use chrono::TimeZone;
 use std::collections::HashMap;
-use std::ops::Sub;
-use std::sync::{Arc, Mutex};
+use std::ops::{Deref, Sub};
+use std::sync::{Arc, Mutex, RwLock};
 
 // The response from an access token request.
 #[derive(Debug, serde::Deserialize)]
@@ -133,7 +133,7 @@ pub struct AccessTokenCache {
     // The subscription info
     subscription_settings: SubscriptionSettings,
     // The cached access token, guarded against multiple async calls.
-    cached_token: Option<AccessToken>,
+    cached_token: Arc<RwLock<Option<AccessToken>>>,
 }
 
 impl AccessTokenCache {
@@ -143,11 +143,30 @@ impl AccessTokenCache {
             // Use the given subscription settings
             subscription_settings,
             // Start without any cached token
-            cached_token: None,
+            cached_token: Arc::new(RwLock::new(None)),
         }
     }
-    // Tries to get a new access token
-    async fn update_token(&mut self) -> anyhow::Result<String> {
+
+    // Tries to get an access token
+    pub async fn access_token(&self) -> anyhow::Result<String> {
+        log::debug!("access_token()");
+        {
+            // Get exclusive access to the cached token
+            let arc = self.cached_token.clone();
+            // Get a read-only lock
+            let read_lock = arc.read().unwrap();
+            // If we have a cached token...
+            if let Some(cached_token) = read_lock.deref() {
+                log::debug!(" - got cached token");
+                // If it has not expired...
+                if !cached_token.is_expired() {
+                    log::debug!(" - cached token has not expired");
+                    // Return the token's access token
+                    return Ok(cached_token.access_token.clone());
+                }
+            }
+        }
+        // Either we don't have a token or it has expired.
         // Get an access token using the settings in the subscription
         let new_token = get_access_token(
             self.subscription_settings.token_url.clone(),
@@ -156,51 +175,21 @@ impl AccessTokenCache {
             self.subscription_settings.resource.clone(),
         )
         .await?;
-        // Save a copy of the access token value
-        let access_token = new_token.access_token();
-        // Save the new token as the cached token
-        self.cached_token = Some(new_token);
-        // Return the new token's access token
-        Ok(access_token)
-    }
-    // Tries to get an access token
-    pub async fn access_token(&mut self) -> anyhow::Result<String> {
-        log::debug!("access_token()");
         // Get exclusive access to the cached token
-        match &mut self.cached_token {
-            // If we have a cached token...
-            Some(cached_token) => {
-                log::debug!(" - checking existing token");
-                // If the cached token has expired...
-                if cached_token.is_expired() {
-                    log::debug!("   - existing token has expired.  Getting new token.");
-                    // Get a new access token
-                    let new_token = self.update_token().await?;
-                    // Return it
-                    Ok(new_token)
-                }
-                // If the cached token has NOT expired...
-                else {
-                    log::debug!("   - existing token has NOT expired.  Returning existing token.");
-                    // Return the cached token's access token as-is
-                    Ok(cached_token.access_token())
-                }
-            }
-            None => {
-                log::debug!(" - no exiting token.  Getting new token.");
-                // Get a new access token
-                let new_token = self.update_token().await?;
-                // Return it
-                Ok(new_token)
-            }
-        }
+        let arc = self.cached_token.clone();
+        // Get a write lock
+        let mut write_lock = arc.write().unwrap();
+        // Insert the new access token into the cache
+        let inserted_token = write_lock.insert(new_token);
+        // Return the new access token
+        Ok(inserted_token.access_token.clone())
     }
 }
 
 // A map of access token caches by subscription ID
 pub struct AccessTokenCacheMap {
     // The access token caches by subscription ID.
-    access_token_caches: Arc<Mutex<HashMap<String, AccessTokenCache>>>,
+    access_token_caches: HashMap<String, AccessTokenCache>,
 }
 impl AccessTokenCacheMap {
     // Create a new cache map from the list of subscriptions.
@@ -217,16 +206,13 @@ impl AccessTokenCacheMap {
         }
         // Return the map
         AccessTokenCacheMap {
-            access_token_caches: Arc::new(Mutex::new(caches)),
+            access_token_caches: caches,
         }
     }
     // Gets an access token for the given subscription.
     pub async fn access_token(&self, subscription_id: String) -> anyhow::Result<String> {
-        // Get the token caches
-        let arc = self.access_token_caches.clone();
-        let mut guard = arc.lock().unwrap();
         // If we have an access token cache for this subscription...
-        if let Some(access_token_cache) = guard.get_mut(&subscription_id) {
+        if let Some(access_token_cache) = self.access_token_caches.get(&subscription_id) {
             // Try to get an access token
             let access_token = access_token_cache.access_token().await?;
             // Return the token

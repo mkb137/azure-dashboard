@@ -38,7 +38,7 @@ where
         // Log it
         log::debug!("Error: {text}");
         // Return that we had an error
-        Err(anyhow::anyhow!("test"))
+        Err(anyhow::anyhow!(text))
     }
 }
 
