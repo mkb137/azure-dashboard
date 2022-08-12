@@ -17,14 +17,14 @@ root:
     - file
 loggers:
   hyper:
-    level: warn
+    level: debug
   reqwest:
-    level: warn
+    level: debug
   azure_dashboard_server::azure_token_cache:
-    level: warn
+    level: debug
   azure_dashboard_server::static_file_handlers:
-    level: warn
+    level: debug
   azure_dashboard_server::settings:
-    level: warn
+    level: debug
   azure_dashboard_server:
     level: debug

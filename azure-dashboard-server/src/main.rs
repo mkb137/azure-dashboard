@@ -44,6 +44,8 @@ async fn main() -> anyhow::Result<()> {
     let token_caches = web::Data::new(AccessTokenCacheMap::new(&settings.subscriptions));
     // Make the settings available as web data
     let settings_data = web::Data::new(settings);
+    // Create a reusable HTTP client
+    let http_client = web::Data::new(reqwest::Client::new());
     // Start the Actix server
     HttpServer::new(move || {
         // Configure cords
@@ -59,6 +61,8 @@ async fn main() -> anyhow::Result<()> {
             .app_data(token_caches.clone())
             // Make the settings available to all routes
             .app_data(settings_data.clone())
+            // Add a re-usable http client
+            .app_data(http_client.clone())
             // Add API routes
             .service(routes::dashboard::dashboard)
             .service(routes::database_usage::database_usage)

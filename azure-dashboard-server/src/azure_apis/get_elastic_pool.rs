@@ -62,16 +62,20 @@ pub struct ElasticPool {
 }
 
 pub async fn get_elastic_pool(
+    http_client: &reqwest::Client,
     token_cache_map: &AccessTokenCacheMap,
     subscription_id: String,
     resource_group_name: String,
     server_name: String,
     elastic_pool_name: String,
 ) -> anyhow::Result<ElasticPool> {
+    log::debug!("get_elastic_pool");
+    log::debug!(" - getting access token");
     // Try to get an access token for this subscription
     let access_token = token_cache_map
         .access_token(subscription_id.clone())
         .await?;
+    log::debug!(" - got access token");
     // Get the URL
     let url = format!(
         "https://management.azure.com\
@@ -82,31 +86,7 @@ pub async fn get_elastic_pool(
         /elasticPools/{elastic_pool_name}\
         ?api-version=2021-05-01-preview"
     );
-    // Create a client
-    let client = reqwest::Client::new();
-    /*
-    let response = client
-        // Get the data from the URL
-        .get(url)
-        // Add the auth header
-        .header("Authorization", format!("Bearer {access_token}"))
-        // Make the request
-        .send()
-        .await?;
-    // If successful...
-    if StatusCode::OK == response.status() {
-        // Get the response as json
-        let elastic_pool = response.json::<ElasticPool>().await?;
-        // Return it
-        Ok(elastic_pool)
-    } else {
-        // Get the response as text
-        let text = response.text().await?;
-        // Log it
-        log::debug!("Error: {text}");
-        // Return that we had an error
-        Err(anyhow::anyhow!("test"))
-    }
-     */
-    super::get_json::<ElasticPool>(client, url, access_token).await
+    // Get the response as JSON
+    log::debug!(" - getting response from JSON");
+    super::get_json::<ElasticPool>(http_client, url, access_token).await
 }

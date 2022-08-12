@@ -84,16 +84,20 @@ impl DatabaseListResponse {
 
 // Lists the databases in an elastic pool.
 pub async fn list_databases_in_elastic_pool(
+    http_client: &reqwest::Client,
     token_cache_map: &AccessTokenCacheMap,
     subscription_id: String,
     resource_group_name: String,
     server_name: String,
     elastic_pool_name: String,
 ) -> anyhow::Result<DatabaseListResponse> {
+    log::debug!("get_database_usage");
+    log::debug!(" - getting access token");
     // Try to get an access token for this subscription
     let access_token = token_cache_map
         .access_token(subscription_id.clone())
         .await?;
+    log::debug!(" - got access token");
     // Form the URL
     let url = format!(
         "https://management.azure.com\
@@ -105,7 +109,7 @@ pub async fn list_databases_in_elastic_pool(
         /databases\
         ?api-version=2021-11-01-preview"
     );
-    // Create a client
-    let client = reqwest::Client::new();
-    super::get_json::<DatabaseListResponse>(client, url, access_token).await
+    // Get the response from JSON
+    log::debug!(" - getting result from JSON");
+    super::get_json::<DatabaseListResponse>(http_client, url, access_token).await
 }

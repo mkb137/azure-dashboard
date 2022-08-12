@@ -107,16 +107,20 @@ impl DatabaseUsageResponse {
 
 // Calls the Azure API to get the usage for the given database.
 pub async fn get_database_usage(
+    http_client: &reqwest::Client,
     token_cache_map: &AccessTokenCacheMap,
     subscription_id: String,
     resource_group_name: String,
     server_name: String,
     database_name: String,
 ) -> anyhow::Result<DatabaseUsageResponse> {
+    log::debug!("get_database_usage");
+    log::debug!(" - getting access token");
     // Try to get an access token for this subscription
     let access_token = token_cache_map
         .access_token(subscription_id.clone())
         .await?;
+    log::debug!(" - got access token");
     // Call the azure API for the database
     let url = format!(
         "https://management.azure.com\
@@ -128,33 +132,7 @@ pub async fn get_database_usage(
         /usages\
         ?api-version=2022-02-01-preview"
     );
-    /*
-    // Create a client
-    let client = reqwest::Client::new();
-    let response = client
-        // Get the data from the URL
-        .get(url)
-        // Add the auth header
-        .header("Authorization", format!("Bearer {access_token}"))
-        // Make the request
-        .send()
-        .await?;
-    // If successful...
-    if StatusCode::OK == response.status() {
-        // Get the response as json
-        let database_usage = response.json::<DatabaseUsageResponse>().await?;
-        // Return it
-        Ok(database_usage)
-    } else {
-        // Get the response as text
-        let text = response.text().await?;
-        // Log it
-        log::debug!("Error: {text}");
-        // Return that we had an error
-        Err(anyhow::anyhow!("test"))
-    }
-     */
-    // Create a client
-    let client = reqwest::Client::new();
-    super::get_json::<DatabaseUsageResponse>(client, url, access_token).await
+    // Get the result from JSON
+    log::debug!(" - getting result from JSON");
+    super::get_json::<DatabaseUsageResponse>(http_client, url, access_token).await
 }

@@ -26,6 +26,7 @@ pub struct ElasticPoolUsageViewModel {
 pub async fn elastic_pool_usage(
     path: web::Path<(String, String, String, String)>,
     settings: web::Data<DashboardSettings>,
+    http_client: web::Data<reqwest::Client>,
     token_cache_map: web::Data<AccessTokenCacheMap>,
 ) -> Result<web::Json<ElasticPoolUsageViewModel>, AzureDashboardError> {
     log::debug!("elastic_pool");
@@ -41,6 +42,7 @@ pub async fn elastic_pool_usage(
     log::debug!(" - getting elastic pool info");
     // Get the elastic pool info
     let elastic_pool_response = get_elastic_pool(
+        http_client.get_ref(),
         token_cache_map.get_ref(),
         subscription_id.clone(),
         resource_group_name.clone(),
@@ -54,6 +56,7 @@ pub async fn elastic_pool_usage(
     log::debug!(" - getting elastic pool list");
     // Get the databases in the elastic pool
     let database_list_response = list_databases_in_elastic_pool(
+        http_client.get_ref(),
         token_cache_map.get_ref(),
         subscription_id.clone(),
         resource_group_name.clone(),
@@ -71,21 +74,21 @@ pub async fn elastic_pool_usage(
     let mut database_size_used: u64 = 0;
     let mut database_size_allocated: u64 = 0;
     // Get the futures that will fetch the database usages for each database
-    let database_usage_response_futures = database_list_response.values().iter().map(|database|
+    for database in database_list_response.values() {
+        log::debug!(" - getting usage info for database {:?}", database.name);
         // Get the database usages
-        get_database_usage(
+        let database_usage_response = get_database_usage(
+            http_client.get_ref(),
             token_cache_map.get_ref(),
             subscription_id.clone(),
             resource_group_name.clone(),
             server_name.clone(),
             database.name.clone(),
-        ));
-    // Execute the futures in parallel
-    let database_usage_responses = futures::future::try_join_all(database_usage_response_futures)
+        )
         .await
-        .unwrap();
-    for database_usage_response in database_usage_responses {
-        // Get the databases sizes
+        // If we got an error, convert it to an Azure API error
+        .map_err(|e| AzureApiError(e.to_string()))?;
+        // Get the database's sizes
         let (size_used, size_allocated, _size_max) = database_usage_response.get_sizes();
         // Add them to the elastic pool's sizes
         database_size_used += size_used;
